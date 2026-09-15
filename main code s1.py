@@ -23,8 +23,8 @@ while True:
         continue
 
     if opcao == '1':
-        ativos.append(cadastrar_ativo())
-        salvar_dados()
+        ativos.append(cadastrar_ativo(ativos))
+        salvar_dados(ativos)
 
     elif opcao == '2':
 
@@ -45,7 +45,7 @@ while True:
 
         elif todos_um == 'um':
             id_ativo = pedir_id('Digite o ID do ativo que deseja listar: ')
-            ativo_encontrado = encontrar_ativo_por_id(id_ativo)
+            ativo_encontrado = encontrar_ativo_por_id(id_ativo, ativos)
             if ativo_encontrado:
                 print(
                     f'''ID: {ativo_encontrado['id']}
@@ -63,11 +63,11 @@ while True:
     elif opcao == '3':
         if ativos:
             id_a_excluir = pedir_id('Digite o ID do ativo que deseja excluir: ')
-            ativo_encontrado = encontrar_ativo_por_id(id_a_excluir)
+            ativo_encontrado = encontrar_ativo_por_id(id_a_excluir, ativos)
 
             if ativo_encontrado:
                 ativos.remove(ativo_encontrado)
-                salvar_dados()
+                salvar_dados(ativos)
                 print('Ativo excluído com sucesso!')
             else:
                 print('Ativo não encontrado.')
@@ -121,7 +121,7 @@ while True:
                 elif todas_um == 'um':
 
                     id_ativo_vulneravel = pedir_id('Digite o ID do ativo que deseja listar as vulnerabilidades: ')
-                    ativo_encontrado = encontrar_ativo_por_id(id_ativo_vulneravel)
+                    ativo_encontrado = encontrar_ativo_por_id(id_ativo_vulneravel, ativos)
 
                     if ativo_encontrado:
 
@@ -146,7 +146,7 @@ while True:
                 print('Adicionando vulnerabilidade...')
 
                 id_ativo_add_vuln = pedir_id('Digite o ID do ativo que deseja adicionar a vulnerabilidade: ')
-                ativo_encontrado = encontrar_ativo_por_id(id_ativo_add_vuln)
+                ativo_encontrado = encontrar_ativo_por_id(id_ativo_add_vuln, ativos)
 
                 if ativo_encontrado:
                     nome_da_vulnerabilidade = input('Digite a vulnerabilidade que deseja adicionar: ').strip()
@@ -175,7 +175,7 @@ while True:
                             'nome da vulnerabilidade': nome_da_vulnerabilidade,
                             'nivel': nivel
                         })
-                        salvar_dados()
+                        salvar_dados(ativos)
                         print(f'Vulnerabilidade "{nome_da_vulnerabilidade}" de nível "{nivel.name.lower()}" adicionada ao ativo {ativo_encontrado["nome"]} com sucesso!')
                 else:
                     print('Ativo não encontrado.')
@@ -184,7 +184,7 @@ while True:
                 print('Removendo vulnerabilidade...')
 
                 id_ativo_del_vuln = pedir_id('Digite o ID do ativo que deseja remover a vulnerabilidade: ')
-                ativo_encontrado = encontrar_ativo_por_id(id_ativo_del_vuln)
+                ativo_encontrado = encontrar_ativo_por_id(id_ativo_del_vuln, ativos)
 
                 if ativo_encontrado:
                     if not ativo_encontrado['vulnerabilidades']:
@@ -204,7 +204,7 @@ while True:
 
                         if vulnerabilidade_encontrada:
                             ativo_encontrado['vulnerabilidades'].remove(vulnerabilidade_encontrada)
-                            salvar_dados()
+                            salvar_dados(ativos)
                             print(f'Vulnerabilidade "{nome_a_remover}" removida do ativo {ativo_encontrado["nome"]} com sucesso!')
                         else:
                             print('Vulnerabilidade não encontrada. Tente novamente.')
