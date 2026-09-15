@@ -1,3 +1,18 @@
+ativos.json
+
 __pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+venv/
+env/
+.venv/
+ENV/
+
+.vscode/
+.idea/
+*.swp
 
 .DS_Store
+Thumbs.db
