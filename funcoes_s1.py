@@ -16,34 +16,28 @@ class NivelDaVulnerabilidade(Enum):
     MEDIO = 2
     ALTO = 3
 
-def cadastrar_ativo(ativos):
-
-    ID_do_ativo = pedir_id('Digite o ID do ativo: ')
+def pedir_nome():
 
     while True:
         try:
-            if encontrar_ativo_por_id(ID_do_ativo, ativos) is not None:
-                raise DadoInvalidoError('Já existe um ativo cadastrado com este ID. Tente outro.')
-            break
-        except DadoInvalidoError as erro:
-            print(erro)
-            ID_do_ativo = pedir_id('Digite o ID do ativo: ')
+            nome_ativo = input('Digite o nome do ativo: ').strip()
 
-    while True:
-        try:
-            ativo = input('Digite o nome do ativo: ').strip()
-            if not ativo:
+            if not nome_ativo:
                 raise DadoInvalidoError('Nome do ativo não pode ser vazio. Tente novamente.')
-
-            if ativo.isnumeric():
+            if nome_ativo.isnumeric():
                 raise DadoInvalidoError('Nome do ativo não pode ser composto apenas por números. Tente novamente.')
             break
         except DadoInvalidoError as erro:
             print(erro)
 
+    return nome_ativo
+
+def pedir_responsavel():
+
     while True:
         try:
             responsavel = input('Digite o nome do responsável pelo ativo: ').strip()
+
             if not responsavel:
                 raise DadoInvalidoError('Nome do responsável não pode ser vazio. Tente novamente.')
             if responsavel.isnumeric():
@@ -52,8 +46,14 @@ def cadastrar_ativo(ativos):
         except DadoInvalidoError as erro:
             print(erro)
 
+    return responsavel
+
+def pedir_status():
+
     status = None
+
     while status is None:
+
         try:
             print(f'''ATIVO - 1 \n INATIVO - 2 \n EM_MANUTENCAO - 3''')
 
@@ -71,27 +71,7 @@ def cadastrar_ativo(ativos):
         except DadoInvalidoError as erro:
             print(erro)
 
-    print(f'''Ativo cadastrado com sucesso!
-    Ativo cadastrado:ID {ID_do_ativo}
-    Nome {ativo}
-    Status {status.name}
-    Responsável {responsavel}
-''')
-
-    return {
-        'id': ID_do_ativo,
-        'nome': ativo,
-        'status': status,
-        'responsavel': responsavel,
-        'vulnerabilidades': []
-    }
-
-def encontrar_ativo_por_id(ID, ativos):
-    for ativo in ativos:
-        if ativo['id'] == ID:
-            return ativo
-
-    return None
+    return status
 
 def pedir_id(mensagem):
 
@@ -112,6 +92,51 @@ def pedir_id(mensagem):
 
         except DadoInvalidoError as erro:
             print(erro)
+
+def pedir_id_disponivel(ativos):
+
+    ID_do_ativo = pedir_id('Digite o ID do ativo: ')
+
+    while True:
+        try:
+            if encontrar_ativo_por_id(ID_do_ativo, ativos) is not None:
+                raise DadoInvalidoError('Já existe um ativo cadastrado com este ID. Tente outro.')
+            
+        except DadoInvalidoError as erro:
+            print(erro)
+            ID_do_ativo = pedir_id('Digite o ID do ativo: ')
+
+        else:
+            return ID_do_ativo
+
+def cadastrar_ativo(ativos):
+
+    ID_do_ativo = pedir_id_disponivel(ativos)
+    nome_ativo = pedir_nome()
+    responsavel = pedir_responsavel()
+    status = pedir_status()
+
+    print(f'''Ativo cadastrado com sucesso!
+    Ativo cadastrado:ID {ID_do_ativo}
+    Nome {nome_ativo}
+    Status {status.name}
+    Responsável {responsavel}
+    ''')
+
+    return {
+        'id': ID_do_ativo,
+        'nome': nome_ativo,
+        'status': status,
+        'responsavel': responsavel,
+        'vulnerabilidades': []
+    }
+
+def encontrar_ativo_por_id(ID, ativos):
+    for ativo in ativos:
+        if ativo['id'] == ID:
+            return ativo
+
+    return None
 
 def salvar_dados(ativos):
     
