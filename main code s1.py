@@ -35,10 +35,10 @@ while True:
                 print('Listando ativos por ID, nome e responsável...')
                 for ativo in ativos:
                     print(
-                        f'''ID: {ativo['id']}
-                        Nome: {ativo['nome']}
-                        Status: {ativo['status'].name}
-                        Responsável: {ativo['responsavel']}'''
+                        f'''ID: {ativo.id}
+                        Nome: {ativo.nome}
+                        Status: {ativo.status.name}
+                        Responsável: {ativo.responsavel}'''
                     )
             else:
                 print('Nenhum ativo cadastrado.')
@@ -48,10 +48,10 @@ while True:
             ativo_encontrado = encontrar_ativo_por_id(id_ativo, ativos)
             if ativo_encontrado:
                 print(
-                    f'''ID: {ativo_encontrado['id']}
-                    Nome: {ativo_encontrado['nome']}
-                    Status: {ativo_encontrado['status'].name}
-                    Responsável: {ativo_encontrado['responsavel']}'''
+                    f'''ID: {ativo_encontrado.id}
+                    Nome: {ativo_encontrado.nome}
+                    Status: {ativo_encontrado.status.name}
+                    Responsável: {ativo_encontrado.responsavel}'''
                 )
 
             else:
@@ -103,13 +103,13 @@ while True:
                         print('Listando todas as vulnerabilidades...')
 
                         for ativo in ativos:
-                            if ativo['vulnerabilidades']:
-                                print(f"Ativo: {ativo['nome']}")
+                            if ativo.vulnerabilidades:
+                                print(f"Ativo: {ativo.nome}")
 
-                                for vulnerabilidade in ativo['vulnerabilidades']:
+                                for vulnerabilidade in ativo.vulnerabilidades:
                                     print(
-                                        f'''  Vulnerabilidade: {vulnerabilidade['nome da vulnerabilidade']}
-                                        Nível: {vulnerabilidade['nivel'].name.lower()}'''
+                                        f'''  Vulnerabilidade: {vulnerabilidade.nome_vulnerabilidade}
+                                        Nível: {vulnerabilidade.nivel.name.lower()}'''
                                     )
 
                             else: 
@@ -125,15 +125,15 @@ while True:
 
                     if ativo_encontrado:
 
-                        if not ativo_encontrado['vulnerabilidades']:
+                        if not ativo_encontrado.vulnerabilidades:
                             print('Este ativo não possui vulnerabilidades cadastradas.')
 
                         else:
                             print('Vulnerabilidades cadastradas:')
-                            for vulnerabilidade in ativo_encontrado['vulnerabilidades']:
+                            for vulnerabilidade in ativo_encontrado.vulnerabilidades:
                                 print(
-                                    f'''Vulnerabilidade: {vulnerabilidade['nome da vulnerabilidade']}
-                                    Nível: {vulnerabilidade['nivel'].name.lower()}'''
+                                    f'''Vulnerabilidade: {vulnerabilidade.nome_vulnerabilidade}
+                                    Nível: {vulnerabilidade.nivel.name.lower()}'''
                                 )
                         
                     else:
@@ -171,12 +171,11 @@ while True:
                                 print('Nível inválido. Tente novamente.')
                                 continue
 
-                        ativo_encontrado['vulnerabilidades'].append({
-                            'nome da vulnerabilidade': nome_da_vulnerabilidade,
-                            'nivel': nivel
-                        })
+                        ativo_encontrado.vulnerabilidades.append(
+                            Vulnerabilidade(nome_da_vulnerabilidade, nivel)
+                        )
                         salvar_dados(ativos)
-                        print(f'Vulnerabilidade "{nome_da_vulnerabilidade}" de nível "{nivel.name.lower()}" adicionada ao ativo {ativo_encontrado["nome"]} com sucesso!')
+                        print(f'Vulnerabilidade "{nome_da_vulnerabilidade}" de nível "{nivel.name.lower()}" adicionada ao ativo {ativo_encontrado.nome} com sucesso!')
                 else:
                     print('Ativo não encontrado.')
 
@@ -187,25 +186,25 @@ while True:
                 ativo_encontrado = encontrar_ativo_por_id(id_ativo_del_vuln, ativos)
 
                 if ativo_encontrado:
-                    if not ativo_encontrado['vulnerabilidades']:
+                    if not ativo_encontrado.vulnerabilidades:
                         print('Este ativo não possui vulnerabilidades cadastradas.')
                     else:
                         print('Vulnerabilidades cadastradas:')
-                        for vulnerabilidade in ativo_encontrado['vulnerabilidades']:
-                            print(f"- {vulnerabilidade['nome da vulnerabilidade']} (nível {vulnerabilidade['nivel']})")
+                        for vulnerabilidade in ativo_encontrado.vulnerabilidades:
+                            print(f"- {vulnerabilidade.nome_vulnerabilidade} (nível {vulnerabilidade.nivel.name.lower()})")
 
                         nome_a_remover = input('Digite o nome da vulnerabilidade que deseja remover: ').strip()
 
-                        vulnerabilidade_encontrada = {}
+                        vulnerabilidade_encontrada = None
 
-                        for vulnerabilidade in ativo_encontrado['vulnerabilidades']:
-                            if vulnerabilidade['nome da vulnerabilidade'] == nome_a_remover:
+                        for vulnerabilidade in ativo_encontrado.vulnerabilidades:
+                            if vulnerabilidade.nome_vulnerabilidade == nome_a_remover:
                                 vulnerabilidade_encontrada = vulnerabilidade
 
                         if vulnerabilidade_encontrada:
-                            ativo_encontrado['vulnerabilidades'].remove(vulnerabilidade_encontrada)
+                            ativo_encontrado.vulnerabilidades.remove(vulnerabilidade_encontrada)
                             salvar_dados(ativos)
-                            print(f'Vulnerabilidade "{nome_a_remover}" removida do ativo {ativo_encontrado["nome"]} com sucesso!')
+                            print(f'Vulnerabilidade "{nome_a_remover}" removida do ativo {ativo_encontrado.nome} com sucesso!')
                         else:
                             print('Vulnerabilidade não encontrada. Tente novamente.')
                 else:
