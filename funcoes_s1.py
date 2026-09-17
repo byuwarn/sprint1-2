@@ -3,6 +3,37 @@ from enum import Enum
 
 ARQUIVO_DADOS = 'ativos.json'
 
+class Vulnerabilidade:
+    def __init__(self, nome_vulnerabilidade, nivel):
+        self.nome_vulnerabilidade = nome_vulnerabilidade
+        self.nivel = nivel
+
+    def para_dicionario(self):
+        return {
+            'nome da vulnerabilidade': self.nome_vulnerabilidade,
+            'nivel': self.nivel.value
+        }
+
+class Ativo:
+
+    def __init__(self, id, nome, responsavel, status):
+        self.id = id
+        self.nome = nome
+        self.responsavel = responsavel
+        self.status = status
+        self.vulnerabilidades = []
+
+    def para_dicionario(self):
+        return {
+            'id': self.id,
+            'nome': self.nome,
+            'responsavel': self.responsavel,
+            'status': self.status.value,
+            'vulnerabilidades': [
+                vulnerabilidade.para_dicionario() for vulnerabilidade in self.vulnerabilidades
+            ]
+        }
+
 class DadoInvalidoError(Exception):
     pass
 
@@ -16,37 +47,26 @@ class NivelDaVulnerabilidade(Enum):
     MEDIO = 2
     ALTO = 3
 
-def pedir_nome():
+def validar_nome_responsavel(nome):
+        
+    if not nome:
+        raise DadoInvalidoError('Este campo não pode ser vazio.')
+    if nome.isnumeric():
+        raise DadoInvalidoError('Este campo não pode ser composto apenas por números.')
 
-    while True:
+def pedir_info(mensagem):
+
+    info = None
+    while info is None:
+
+        info=input(mensagem).strip()
+
         try:
-            nome_ativo = input('Digite o nome do ativo: ').strip()
-
-            if not nome_ativo:
-                raise DadoInvalidoError('Nome do ativo não pode ser vazio. Tente novamente.')
-            if nome_ativo.isnumeric():
-                raise DadoInvalidoError('Nome do ativo não pode ser composto apenas por números. Tente novamente.')
-            break
+            validar_nome_responsavel(info)
+            return info
         except DadoInvalidoError as erro:
             print(erro)
-
-    return nome_ativo
-
-def pedir_responsavel():
-
-    while True:
-        try:
-            responsavel = input('Digite o nome do responsável pelo ativo: ').strip()
-
-            if not responsavel:
-                raise DadoInvalidoError('Nome do responsável não pode ser vazio. Tente novamente.')
-            if responsavel.isnumeric():
-                raise DadoInvalidoError('Nome do responsável não pode ser composto apenas por números. Tente novamente.')
-            break
-        except DadoInvalidoError as erro:
-            print(erro)
-
-    return responsavel
+            info = None
 
 def pedir_status():
 
@@ -112,73 +132,76 @@ def pedir_id_disponivel(ativos):
 def cadastrar_ativo(ativos):
 
     ID_do_ativo = pedir_id_disponivel(ativos)
-    nome_ativo = pedir_nome()
-    responsavel = pedir_responsavel()
+    nome_ativo = pedir_info('Digite o nome do ativo: ')
+    responsavel = pedir_info('Digite o nome do responsável pelo ativo: ')
     status = pedir_status()
 
     print(f'''Ativo cadastrado com sucesso!
     Ativo cadastrado:ID {ID_do_ativo}
     Nome {nome_ativo}
-    Status {status.name}
     Responsável {responsavel}
+    Status {status.name}
     ''')
 
-    return {
-        'id': ID_do_ativo,
-        'nome': nome_ativo,
-        'status': status,
-        'responsavel': responsavel,
-        'vulnerabilidades': []
-    }
+    return Ativo(ID_do_ativo, nome_ativo, responsavel, status)
 
 def encontrar_ativo_por_id(ID, ativos):
     for ativo in ativos:
-        if ativo['id'] == ID:
+
+        if ativo.id == ID:
             return ativo
 
     return None
 
 def salvar_dados(ativos):
-    
+
     lista_para_salvar = []
 
-    try: 
+    for ativo in ativos:
 
-        for ativo in ativos:
-            ativo_formatado = ativo.copy()
-            ativo_formatado['status'] = ativo_formatado['status'].value
+        lista_para_salvar.append(ativo.para_dicionario())
 
-            vulnerabilidades_formatadas = []
-
-            for vulnerabilidade in ativo['vulnerabilidades']:
-                copia_vulnerabilidade = vulnerabilidade.copy()
-                copia_vulnerabilidade['nivel']=copia_vulnerabilidade['nivel'].value
-                vulnerabilidades_formatadas.append(copia_vulnerabilidade)
-
-            ativo_formatado['vulnerabilidades']=vulnerabilidades_formatadas
-            lista_para_salvar.append(ativo_formatado)
-            
+    try:
         with open(ARQUIVO_DADOS, 'w', encoding='utf-8') as arquivo:
             json.dump(lista_para_salvar, arquivo, indent=4, ensure_ascii=False)
 
     except PermissionError:
         print('Erro de Persistência: Sem permissão para gravar no arquivo no computador.')
-
     except IOError:
-        print(f'Erro de Persistência ao salvar os dados no arquivo.')
+        print('Erro de Persistência ao salvar os dados no arquivo.')
 
 def carregar_dados():
+
     try:
         with open(ARQUIVO_DADOS, 'r', encoding='utf-8') as arquivo:
             dados_brutos = json.load(arquivo)
-            for ativo in dados_brutos:
-                ativo['status'] = StatusDoAtivo(ativo['status'])
 
-                for vulnerabilidade in ativo['vulnerabilidades']:
-                    vulnerabilidade['nivel'] = NivelDaVulnerabilidade(vulnerabilidade['nivel'])
+            ativos_carregados = []
 
-            return dados_brutos
-            
+            for ativo_dicionario in dados_brutos:
+
+                vulnerabilidades_carregadas = []
+
+                for vulnerabilidade_dicionario in ativo_dicionario['vulnerabilidades']:
+                    nova_vulnerabilidade = Vulnerabilidade(
+                        vulnerabilidade_dicionario['nome da vulnerabilidade'],
+                        NivelDaVulnerabilidade(vulnerabilidade_dicionario['nivel'])
+                    )
+                    vulnerabilidades_carregadas.append(nova_vulnerabilidade)
+
+                novo_ativo = Ativo(
+                    ativo_dicionario['id'],
+                    ativo_dicionario['nome'],
+                    ativo_dicionario['responsavel'],
+                    StatusDoAtivo(ativo_dicionario['status'])
+                )
+
+                novo_ativo.vulnerabilidades = vulnerabilidades_carregadas
+
+                ativos_carregados.append(novo_ativo)
+
+            return ativos_carregados
+
     except FileNotFoundError:
         return []
 
