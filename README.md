@@ -55,13 +55,11 @@ Inside option **4 (Manage vulnerabilities)**, a submenu lets you list, add, and 
 
 ## 🫧 Project Status
 
-This project is developed incrementally across sprints, with a focus on:
+This project is developed incrementally across sprints in the early weeks of my Cybersecurity degree at the Federal University of Uberlândia, with a focus on:
 - Clear, expressive naming
 - Single-responsibility functions
 - Error handling that doesn't expose internal details
 - User input validation
-
-**Current sprint:** applying the Clean Code checklist (S2_01) — refactoring functions with multiple responsibilities.
 
 ## ✨ License
 
