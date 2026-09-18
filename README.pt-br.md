@@ -55,13 +55,11 @@ Dentro da opção **4 (Editar vulnerabilidades)**, um submenu permite listar, ad
 
 ## 🫧 Status do projeto
 
-Projeto em desenvolvimento incremental (por sprints), com foco em:
+Projeto em desenvolvimento incremental (por sprints) durante minhas primeiras semanas na graduação em Cibersegurança na Universidade Federal de Uberlândia, com foco em:
 - Nomenclatura clara e expressiva
 - Funções com responsabilidade única
 - Tratamento de erros sem exposição de dados internos
 - Validação de entradas do usuário
-
-**Sprint atual:** aplicação do checklist de Boas Práticas de Código (S2_01) — refatoração de funções com múltiplas responsabilidades.
 
 ## ✨ Licença
 
