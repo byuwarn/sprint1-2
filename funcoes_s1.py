@@ -68,7 +68,7 @@ def pedir_info(mensagem):
             print(erro)
             info = None
 
-def pedir_status():
+def pedir_status(mensagem):
 
     status = None
 
@@ -77,7 +77,7 @@ def pedir_status():
         try:
             print(f'''ATIVO - 1 \n INATIVO - 2 \n EM_MANUTENCAO - 3''')
 
-            status_digitado = input('Digite o status do ativo: ').strip()
+            status_digitado = input(mensagem).strip()
 
             if status_digitado == '1':
                 status = StatusDoAtivo.ATIVO
@@ -134,7 +134,7 @@ def cadastrar_ativo(ativos):
     ID_do_ativo = pedir_id_disponivel(ativos)
     nome_ativo = pedir_info('Digite o nome do ativo: ')
     responsavel = pedir_info('Digite o nome do responsável pelo ativo: ')
-    status = pedir_status()
+    status = pedir_status('Digite o status do ativo: ')
 
     print(f'''Ativo cadastrado com sucesso!
     Ativo cadastrado:ID {ID_do_ativo}
@@ -152,6 +152,77 @@ def encontrar_ativo_por_id(ID, ativos):
             return ativo
 
     return None
+
+def editar_ativo(ativos):
+
+    id_ativo = pedir_id('Digite o ID do ativo que deseja editar: ')
+
+    ativo_encontrado = encontrar_ativo_por_id(id_ativo, ativos)
+
+    if not ativo_encontrado:
+        print('Nenhum ativo com este ID cadastrado.')
+        return
+
+    print(f'''Dados atuais do ativo:
+    ID: {ativo_encontrado.id}
+    Nome: {ativo_encontrado.nome}
+    Responsável: {ativo_encontrado.responsavel}
+    Status: {ativo_encontrado.status.name}
+    ''')
+
+    while True:
+        print('1 - Editar responsável')
+        print('2 - Editar status')
+        print('3 - Voltar')
+
+        opcao = input('Escolha uma opção: ').strip()
+
+        if opcao == '1':
+            novo_responsavel = pedir_info('Digite o novo nome do responsável pelo ativo: ')
+            ativo_encontrado.responsavel = novo_responsavel
+            print(f'Responsável atualizado com sucesso. Novo responsável: {novo_responsavel}')
+
+        elif opcao == '2':
+            novo_status=pedir_status('Digite o novo status do ativo: ')
+            ativo_encontrado.status = novo_status
+            print(f'Status do ativo atualizado com sucesso. Status atual: {novo_status.name}')
+
+        elif opcao == '3':
+            print('Voltando...')
+            break
+
+        else:
+            print('Opção inválida.')
+
+def excluir_ativo(ativos):
+    if ativos:
+        id_a_excluir = pedir_id('Digite o ID do ativo que deseja excluir: ')
+        ativo_encontrado = encontrar_ativo_por_id(id_a_excluir, ativos)
+
+        if ativo_encontrado:
+
+            if confirmar_exclusao(ativo_encontrado):
+                ativos.remove(ativo_encontrado)
+                salvar_dados(ativos)
+                print('Ativo excluído com sucesso!')
+            else:
+                print('Exclusão cancelada.')
+
+        else:
+            print('Ativo não encontrado.')
+
+    else:
+        print('Nenhum ativo cadastrado.')
+
+def confirmar_exclusao(ativo):
+
+    print(f'Tem certeza que deseja excluir o ativo "{ativo.nome}" (ID {ativo.id})?')
+    resposta = input('Digite "sim" para excluir ou tecle enter para voltar: ').strip().lower()
+
+    if resposta == 'sim':
+        return True
+    else:
+        return False
 
 def salvar_dados(ativos):
 

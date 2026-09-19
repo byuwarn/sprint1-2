@@ -9,7 +9,8 @@ while True:
     print('2 - Listar ativos')
     print('3 - Excluir ativo')
     print('4 - Editar vulnerabilidades')
-    print('5 - Sair')
+    print('5 - Editar ativo')
+    print('6 - Sair')
 
     try:
         opcao = input('Escolha uma opção: ').strip()
@@ -61,18 +62,7 @@ while True:
             print('Opção inválida. Tente novamente.')
 
     elif opcao == '3':
-        if ativos:
-            id_a_excluir = pedir_id('Digite o ID do ativo que deseja excluir: ')
-            ativo_encontrado = encontrar_ativo_por_id(id_a_excluir, ativos)
-
-            if ativo_encontrado:
-                ativos.remove(ativo_encontrado)
-                salvar_dados(ativos)
-                print('Ativo excluído com sucesso!')
-            else:
-                print('Ativo não encontrado.')
-        else:
-            print('Nenhum ativo cadastrado.')
+        excluir_ativo(ativos)
 
     elif opcao == '4':
         
@@ -215,5 +205,12 @@ while True:
                 break
 
     elif opcao == '5':
+        editar_ativo(ativos)
+        salvar_dados(ativos)
+
+    elif opcao == '6':
         print('Saindo do programa...')
         break
+
+    else:
+        print('Opção inválida. Tente novamente.')
